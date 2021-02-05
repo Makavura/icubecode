@@ -30,7 +30,13 @@ app.post('/users', jsonParser, (req, res) => {
     if (users.users.length == 0) {
         res.json("Error: Please Provide an array of users in your query").status(422);
     } else {
+        /* 
+        Response with Payload
+        */
         let response = [];
+        /* 
+        Loop through array of user names and find matching entries
+        */
         users.users.forEach(user => {
             let _ = db.get('users')
                 .find({ "name": user })
@@ -44,12 +50,35 @@ app.post('/users', jsonParser, (req, res) => {
     }
 });
 
-app.post('/add', (req, res) => {
+app.post('/add',jsonParser, (req, res) => {
     /* 
     Given a name e.g {"user": "Dan"}
     Create a user
     Return a User Object for a new user
     */
+    let userinfo = req.body;
+    let userObject = {
+        "name": null,
+        "owes": {
+
+        },
+        "owed_by": {
+
+        },
+        "balance": "< 0 - 0 >"
+    }
+    if (userinfo.user.length == 0) {
+        res.json("Error: Please Provide a user's name in your query").status(422);
+    } else {
+        /* 
+        Create user entry
+        */
+        userObject.name = userinfo.user;
+        db.get('users')
+            .push(userObject)
+            .write()
+        res.json(userObject).status(201);
+    }
 });
 
 app.post('/iou', (req, res) => {
