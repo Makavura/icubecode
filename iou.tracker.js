@@ -4,21 +4,29 @@ const FileSync = require('lowdb/adapters/FileSync');
 const adapter = new FileSync('db.json');
 const db = low(adapter);
 
+// Set some defaults (required if your JSON file is empty)
+db.defaults({ users: [] })
+  .write()
+
 const express = require('express');
 const app = express();
 const port = 3000;
 
 const chalk = require('chalk');
+const bodyParser = require('body-parser')
+
+const jsonParser = bodyParser.json()
 
 app.get('/', (req, res) => {
     res.send('Welcome to IOU Tracker API V1 By Makavura Mughanga')
 });
 
-app.post('/users', (req, res) => {
+app.post('/users',  jsonParser, (req, res) => {
     /* 
     Given a list of users {"users":["Adam","Bob"]} 
     Return a response of users matching those names sorted by name
     */
+
 });
 
 app.post('/add', (req, res) => {
