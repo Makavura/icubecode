@@ -13,7 +13,8 @@ const app = express();
 const port = 3000;
 
 const chalk = require('chalk');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const { response } = require('express');
 
 const jsonParser = bodyParser.json()
 
@@ -50,7 +51,7 @@ app.post('/users', jsonParser, (req, res) => {
     }
 });
 
-app.post('/add',jsonParser, (req, res) => {
+app.post('/add', jsonParser, (req, res) => {
     /* 
     Given a name e.g {"user": "Dan"}
     Create a user
@@ -81,12 +82,45 @@ app.post('/add',jsonParser, (req, res) => {
     }
 });
 
-app.post('/iou', (req, res) => {
+app.post('/iou', jsonParser, (req, res) => {
     /* 
     Given 
     {"lender": "Dan","borrower": "Amos","amount":5.25}
     Return  a response of users affected by IOU entry sorted by name
     */
+    let iou = req.body;
+    if (!iou.lender) res.json("Please provide a lender").status(422);
+    if (!iou.borrower) res.json("Please provide a borrower").status(422);
+    if (!iou.amount) res.json("Please provide an IOU amount");
+
+    let _lender = iou.lender;
+    let _borrower = iou.borrower;
+
+    /* 
+    Set IOU Record in borrower's records
+    */
+    db.get('users')
+        .find({ "name": iou.borrower })
+        .assign({
+            "owes": {
+                _lender: iou.amount
+            }
+        })
+        .value();
+
+    /* 
+    Set IOU Record in lender's records
+    */
+    db.get('users')
+        .find({ "name": iou.lender })
+        .assign({
+            "owed_by": {
+                _borrower: iou.amount
+            }
+        })
+        .value();
+
+    
 });
 
 app.delete('/user', (req, res) => {
