@@ -6,7 +6,7 @@ const db = low(adapter);
 
 // Set some defaults (required if your JSON file is empty)
 db.defaults({ users: [] })
-  .write()
+    .write()
 
 const express = require('express');
 const app = express();
@@ -21,12 +21,33 @@ app.get('/', (req, res) => {
     res.send('Welcome to IOU Tracker API V1 By Makavura Mughanga')
 });
 
-app.post('/users',  jsonParser, (req, res) => {
+app.post('/users', jsonParser, (req, res) => {
     /* 
     Given a list of users {"users":["Adam","Bob"]} 
     Return a response of users matching those names sorted by name
     */
+    let users = req.body;
+    if (users.users.length == 0) {
+        res.json("Error: Please Provide an array of users in your query").status(422);
+    } else {
+        users.users.forEach(user => {
+            db.get('users')
+                .push({ "name": user })
+                .write();
+        });
 
+        let response = [];
+        users.users.forEach(user => {
+            let _ = db.get('users')
+                .find({ "name": user })
+                .value()
+            response.push(_);
+        });
+        let responseObject = {
+            users: response
+        }
+        res.json(responseObject).status(201);
+    }
 });
 
 app.post('/add', (req, res) => {
