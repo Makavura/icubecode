@@ -30,12 +30,6 @@ app.post('/users', jsonParser, (req, res) => {
     if (users.users.length == 0) {
         res.json("Error: Please Provide an array of users in your query").status(422);
     } else {
-        users.users.forEach(user => {
-            db.get('users')
-                .push({ "name": user })
-                .write();
-        });
-
         let response = [];
         users.users.forEach(user => {
             let _ = db.get('users')
@@ -46,7 +40,7 @@ app.post('/users', jsonParser, (req, res) => {
         let responseObject = {
             users: response
         }
-        res.json(responseObject).status(201);
+        res.json(responseObject).status(200);
     }
 });
 
