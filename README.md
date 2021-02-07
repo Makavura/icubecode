@@ -1,11 +1,11 @@
 # Code Challenge
 
 **Challenges**
-
-- [ ] Game of darts
-- [ ] Maximum theft carryaway
-- [ ] Ice & Fire
-- [ ] IOU tracking
+ 
+- [ ] Game of darts ✔️
+- [ ] Maximum theft carryaway ✔️
+- [ ] Ice & Fire ✔️
+- [ ] IOU tracking ✔️
 
 **Requirements**
 
@@ -48,6 +48,19 @@ Optionally, you can tinker with the Js in a browser console for Darts and Knapsa
 - open darts.js
 - call the score function within js file with desired variables e.g score(4, 2);
 - run script by executing node ./darts.js
+
+# Max Thievery
+
+- [Code](https://github.com/Makavura/icubecode/blob/main/max.thievery.js)
+## Setup Instructions
+
+**Setup Instructions**
+
+- git clone https://github.com/Makavura/icubecode.git
+- cd icubecode
+- npm install
+- run script by executing node ./max.thievery.js
+
 
 # IOU Tracking REST API
 
