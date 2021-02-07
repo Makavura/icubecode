@@ -92,6 +92,8 @@ app.post('/iou', jsonParser, (req, res) => {
     if (!iou.lender) res.json("Please provide a lender").status(422);
     if (!iou.borrower) res.json("Please provide a borrower").status(422);
     if (!iou.amount) res.json("Please provide an IOU amount").status(422);;
+    let _lender = iou.lender;
+    let _borrower = iou.borrower;
     /* 
     Set IOU Record in borrower's records
     */
@@ -99,7 +101,7 @@ app.post('/iou', jsonParser, (req, res) => {
         .find({ "name": iou.borrower })
         .assign({
             "owes": {
-                _lender: iou.amount
+                [_lender]: iou.amount
             }
         })
         .value();
@@ -112,7 +114,7 @@ app.post('/iou', jsonParser, (req, res) => {
     /* 
         Process Individual IOU information
     */
-    let borrowedamount, owedamount;
+    let borrowedamount = 0, owedamount = 0;
     Object.values(borrower.owes).forEach(
         element => {
             borrowedamount += element;
@@ -139,11 +141,12 @@ app.post('/iou', jsonParser, (req, res) => {
     /* 
     Set IOU Record in lender's records
     */
+   
     db.get('users')
         .find({ "name": iou.lender })
         .assign({
             "owed_by": {
-                _borrower: iou.amount
+              [_borrower]  : iou.amount
             }
         })
         .value();
@@ -156,19 +159,27 @@ app.post('/iou', jsonParser, (req, res) => {
     /* 
     Process lender's individual information
     */
-    let lendersborrowedamount, lendersowedamount;
-    Object.values(lender.owes).forEach(
-        element => {
-            lendersborrowedamount += element;
-            return lendersborrowedamount;
-        }
-    );
-    Object.values(lender.owed_by).forEach(
-        element => {
-            lendersowedamount += element;
-            return lendersowedamount;
-        }
-    );
+    let lendersborrowedamount = 0, lendersowedamount = 0;
+    console.log(lender);
+
+    if (Object.keys(lender.owes).length !== 0) {
+        Object.values(lender.owes).forEach(
+            element => {
+                lendersborrowedamount += element;
+                return lendersborrowedamount;
+            }
+        );
+
+    }
+
+    if (Object.keys(lender.owed_by).length !== 0) {
+        Object.values(lender.owed_by).forEach(
+            element => {
+                lendersowedamount += element, 10;
+                return lendersowedamount;
+            }
+        );
+    }
     /* 
     Update individual information
     */
@@ -178,8 +189,18 @@ app.post('/iou', jsonParser, (req, res) => {
             "balance": `< ${lendersowedamount} - ${lendersborrowedamount}  >`
         })
         .value();
+    /* 
+    Fetch user information of users affected by this IOU transaction
+    */
+    let _ = []
+    _.push(db.get('users')
+        .find({ "name": iou.lender })
+        .value())
+    _.push(db.get('users')
+        .find({ "name": iou.borrower })
+        .value())
 
-
+    res.json(_).status(200);
 });
 
 app.delete('/user', (req, res) => {
