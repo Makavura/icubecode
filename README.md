@@ -2,10 +2,10 @@
 
 **Challenges**
 
-- [ x ] Game of darts
+- [ ] Game of darts
 - [ ] Maximum theft carryaway
-- [ x ] Ice & Fire
-- [ x ] IOU tracking
+- [ ] Ice & Fire
+- [ ] IOU tracking
 
 **Requirements**
 
